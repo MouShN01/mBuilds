@@ -5,12 +5,13 @@ namespace DI
 {
     public class DIContainer
     {
-        private readonly DIContainer _privateContainer;
+        private readonly DIContainer _parentContainer;
         private readonly Dictionary<(string, Type), DIRegistration> _registrations = new();
+        private readonly HashSet<(string, Type)> _resolutions = new();
         
-        public DIContainer(DIContainer parentContainer)
+        public DIContainer(DIContainer parentContainer = null)
         {
-            _privateContainer = parentContainer;
+            _parentContainer = parentContainer;
         }
 
         public void RegisterSingleton<T>(Func<DIContainer, T> factory)
@@ -58,6 +59,47 @@ namespace DI
             };
         }
 
+        public T Resolve<T>(string tag = null)
+        {
+            var key = (tag, typeof(T));
+
+            if (_resolutions.Contains(key))
+            {
+                throw new Exception($"Cyclic dependency for tag {key.tag} and type {key.Item2.FullName}");
+            }
+
+            _resolutions.Add(key);
+
+            try
+            {
+                if (_registrations.TryGetValue(key, out var registration))
+                {
+                    if (registration.IsSingleton)
+                    {
+                        if (registration.Instance == null && registration.Factory != null)
+                        {
+                            registration.Instance = registration.Factory(this);
+                        }
+
+                        return (T)registration.Instance;
+                    }
+
+                    return (T)registration.Factory(this);
+                }
+
+                if (_parentContainer != null)
+                {
+                    _parentContainer.Resolve<T>(tag);
+                }
+            }
+            finally
+            {
+                _resolutions.Remove(key);
+            }
+
+            throw new Exception($"Couldn't find dependency for tag {tag} and type {key.Item2.FullName}");
+        }
+
         private void Register<T>((string, Type) key, Func<DIContainer, T> factory, bool isSingleton)
         {
             if (_registrations.ContainsKey(key))
@@ -69,7 +111,7 @@ namespace DI
 
             _registrations[key] = new DIRegistration
             {
-                Factory = c => factory,
+                Factory = c => factory(c),
                 IsSingleton = isSingleton
             };
         }
