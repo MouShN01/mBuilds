@@ -48,7 +48,7 @@ namespace DI
             projectContainer.RegisterSingleton("option 1", _=>new MyAwesomeProjectService());
             projectContainer.RegisterSingleton("option 2", _=>new MyAwesomeProjectService());
 
-            var sceneRoot = FindObjectOfType<DISceneExample>();
+            var sceneRoot = FindFirstObjectByType<DISceneExample>();
             sceneRoot.Init(projectContainer);
         }
     }
