@@ -1,25 +1,33 @@
-using System;
+using mBuildings.Scripts.Game.Gameplay.Root;
 using mBuildings.Scripts.Game.GameRoot;
 using mBuildings.Scripts.Game.MainMenu.Root.UI;
+using R3;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace mBuildings.Scripts.Game.MainMenu.Root
 {
     public class MainMenuEntryPoint : MonoBehaviour
     {
-        public event Action GoToGameplaySceneRequested;
-        
         [SerializeField] private UIMainMenuRootBinder _sceneUIRootPrefab;
 
-        public void Run(UIRootView uiRoot)
+        public Observable<MainMenuExitParams> Run(UIRootView uiRoot, MainMenuEnterParams enterParams)
         {
             var uiScene = Instantiate(_sceneUIRootPrefab);
             uiRoot.AttachSceneUI(uiScene.gameObject);
 
-            uiScene.GoToGameplayButtonClicked += () =>
-            {
-                GoToGameplaySceneRequested?.Invoke();
-            };
+            var exitSignalSubj = new Subject<Unit>();
+            uiScene.Bind(exitSignalSubj);
+            
+            Debug.Log($"MAIN MENU ENTRY POINT: Run main menu scene. Results: {enterParams?.Result}");
+
+            var saveFileName = "save1.save";
+            var levelNumber = Random.Range(0, 300);
+            var gameplayEnterParams = new GameplayEnterParams(saveFileName, levelNumber);
+            var mainMenuExitParams = new MainMenuExitParams(gameplayEnterParams);
+            var exitToGameplaySceneSignal = exitSignalSubj.Select(_=>mainMenuExitParams);
+
+            return exitToGameplaySceneSignal;
         }
     }
 }
