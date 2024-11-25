@@ -1,5 +1,7 @@
 using System.Collections;
 using mBuildings.Scripts.Game.Gameplay;
+using mBuildings.Scripts.Game.Gameplay.Root;
+using mBuildings.Scripts.Game.MainMenu.Root;
 using mBuildings.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -36,6 +38,13 @@ namespace mBuildings.Scripts.Game.GameRoot
         {
 #if UNITY_EDITOR
             var sceneName = SceneManager.GetActiveScene().name;
+            
+            if (sceneName == Scenes.MAIN_MENU)
+            {
+                _coroutines.StartCoroutine(LoadAndStartMainMenu());
+                return;
+            }
+            
             if (sceneName == Scenes.GAMEPLAY)
             {
                 _coroutines.StartCoroutine(LoadAndStartGameplay());
@@ -48,7 +57,7 @@ namespace mBuildings.Scripts.Game.GameRoot
             }
 #endif
 
-            _coroutines.StartCoroutine(LoadAndStartGameplay());
+            _coroutines.StartCoroutine(LoadAndStartMainMenu());
         }
 
         private IEnumerator LoadAndStartGameplay()
@@ -61,7 +70,34 @@ namespace mBuildings.Scripts.Game.GameRoot
             yield return new WaitForSeconds(2);
 
             var sceneEntryPoint = Object.FindFirstObjectByType<GameplayEntryPoint>();
-            sceneEntryPoint.Run();
+            sceneEntryPoint.Run(_uiRoot);
+            
+            //dirty
+            sceneEntryPoint.GoToMainMenuSceneRequested += () =>
+            {
+                _coroutines.StartCoroutine(LoadAndStartMainMenu());
+            };
+            
+            _uiRoot.HideLoadingScreen();
+        }
+        
+        private IEnumerator LoadAndStartMainMenu()
+        {
+            _uiRoot.ShowLoadingScreen();
+
+            yield return LoadScene(Scenes.BOOT);
+            yield return LoadScene(Scenes.MAIN_MENU);
+
+            yield return new WaitForSeconds(2);
+
+            var sceneEntryPoint = Object.FindFirstObjectByType<MainMenuEntryPoint>();
+            sceneEntryPoint.Run(_uiRoot);
+            
+            //dirty
+            sceneEntryPoint.GoToGameplaySceneRequested += () =>
+            {
+                _coroutines.StartCoroutine(LoadAndStartGameplay());
+            };
             
             _uiRoot.HideLoadingScreen();
         }
