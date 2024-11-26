@@ -1,6 +1,8 @@
 using System.Collections;
+using BaCon;
 using mBuildings.Scripts.Game.Gameplay;
 using mBuildings.Scripts.Game.Gameplay.Root;
+using mBuildings.Scripts.Game.GameRoot.Services;
 using mBuildings.Scripts.Game.MainMenu.Root;
 using mBuildings.Scripts.Utils;
 using R3;
@@ -14,6 +16,8 @@ namespace mBuildings.Scripts.Game.GameRoot
         private static GameEntryPoint _instance;
         private Coroutines _coroutines;
         private UIRootView _uiRoot;
+        private readonly DIContainer _rootContainer = new();
+        private DIContainer _cachedSceneContainer;
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void AutostartGame()
@@ -33,6 +37,9 @@ namespace mBuildings.Scripts.Game.GameRoot
             var prefabUIRoot = Resources.Load<UIRootView>("UIRoot");
             _uiRoot = Object.Instantiate(prefabUIRoot);
             Object.DontDestroyOnLoad(_uiRoot.gameObject);
+            _rootContainer.RegisterInstance(_uiRoot);
+
+            _rootContainer.RegisterFactory(_ => new SomeProjectService()).AsSingle();
         }
 
         private void StartGame()
@@ -65,6 +72,7 @@ namespace mBuildings.Scripts.Game.GameRoot
         private IEnumerator LoadAndStartGameplay(GameplayEnterParams enterParams)
         {
             _uiRoot.ShowLoadingScreen();
+            _cachedSceneContainer?.Dispose();
 
             yield return LoadScene(Scenes.BOOT);
             yield return LoadScene(Scenes.GAMEPLAY);
@@ -72,7 +80,8 @@ namespace mBuildings.Scripts.Game.GameRoot
             yield return new WaitForSeconds(1);
 
             var sceneEntryPoint = Object.FindFirstObjectByType<GameplayEntryPoint>();
-            sceneEntryPoint.Run(_uiRoot, enterParams).Subscribe(gameplayExitParams =>
+            var gameplayContainer = _cachedSceneContainer = new DIContainer(_rootContainer);
+            sceneEntryPoint.Run(gameplayContainer, enterParams).Subscribe(gameplayExitParams =>
             {
                 _coroutines.StartCoroutine(LoadAndStartMainMenu(gameplayExitParams.MainMenuEnterParams));
             });
@@ -83,6 +92,7 @@ namespace mBuildings.Scripts.Game.GameRoot
         private IEnumerator LoadAndStartMainMenu(MainMenuEnterParams enterParams = null)
         {
             _uiRoot.ShowLoadingScreen();
+            _cachedSceneContainer?.Dispose();
 
             yield return LoadScene(Scenes.BOOT);
             yield return LoadScene(Scenes.MAIN_MENU);
@@ -90,7 +100,8 @@ namespace mBuildings.Scripts.Game.GameRoot
             yield return new WaitForSeconds(1);
 
             var sceneEntryPoint = Object.FindFirstObjectByType<MainMenuEntryPoint>();
-            sceneEntryPoint.Run(_uiRoot, enterParams).Subscribe(mainMenuExitParams =>
+            var mainMenuContainer = _cachedSceneContainer = new DIContainer(_rootContainer);
+            sceneEntryPoint.Run(mainMenuContainer, enterParams).Subscribe(mainMenuExitParams =>
             {
                 var targetSceneName = mainMenuExitParams.TargetSceneEnterParams.SceneName;
 

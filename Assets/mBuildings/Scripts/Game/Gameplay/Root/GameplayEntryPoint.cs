@@ -1,4 +1,5 @@
 using System;
+using BaCon;
 using mBuildings.Scripts.Game.Gameplay.Root.UI;
 using mBuildings.Scripts.Game.GameRoot;
 using mBuildings.Scripts.Game.MainMenu.Root;
@@ -11,12 +12,21 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
     {
         [SerializeField] private UIGameplayRootBinder _sceneUIRootPrefab;
 
-        public Observable<GameplayExitParams> Run(UIRootView uiRoot, GameplayEnterParams enterParams)
+        public Observable<GameplayExitParams> Run(DIContainer gameplayContainer, GameplayEnterParams enterParams)
         {
+            GameplayRegistrations.Register(gameplayContainer, enterParams);
+            var gameplayViewModelContainer = new DIContainer(gameplayContainer);
+            GameplayViewModelRegistrations.Register(gameplayViewModelContainer);
+            
+            //For test
+            gameplayViewModelContainer.Resolve<UIGameplayRootViewModel>();
+            gameplayViewModelContainer.Resolve<WorldGameplayRootViewModel>();
+            
+            var uiRoot = gameplayContainer.Resolve<UIRootView>();
             var uiScene = Instantiate(_sceneUIRootPrefab);
             uiRoot.AttachSceneUI(uiScene.gameObject);
 
-            var exitSceneSignalSubj = new Subject<Unit>();
+            var exitSceneSignalSubj = new Subject<Unit>(); // subject that will be send to UIGameplay
             uiScene.Bind(exitSceneSignalSubj);
             
             Debug.Log($"GAMEPLAY ENTRY POINT: save file name = {enterParams.SaveFileName}, level to load = {enterParams.LevelNumber}");

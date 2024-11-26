@@ -9,7 +9,7 @@ namespace mBuildings.Scripts.Game.Gameplay.Root.UI
 
         public void HandleGoToMainMenuButtonClicked()
         {
-            _exitSceneSignalSubj?.OnNext(Unit.Default);
+            _exitSceneSignalSubj?.OnNext(Unit.Default); //Send signal
         }
 
         public void Bind(Subject<Unit> exitSceneSignalSubj)

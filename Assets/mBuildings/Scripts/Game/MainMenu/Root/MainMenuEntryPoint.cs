@@ -1,3 +1,4 @@
+using BaCon;
 using mBuildings.Scripts.Game.Gameplay.Root;
 using mBuildings.Scripts.Game.GameRoot;
 using mBuildings.Scripts.Game.MainMenu.Root.UI;
@@ -11,12 +12,20 @@ namespace mBuildings.Scripts.Game.MainMenu.Root
     {
         [SerializeField] private UIMainMenuRootBinder _sceneUIRootPrefab;
 
-        public Observable<MainMenuExitParams> Run(UIRootView uiRoot, MainMenuEnterParams enterParams)
+        public Observable<MainMenuExitParams> Run(DIContainer mainMenuContainer, MainMenuEnterParams enterParams)
         {
+            MainMenuRegistrations.Register(mainMenuContainer, enterParams);
+            var mainMenuViewModelContainer = new DIContainer(mainMenuContainer);
+            MainMenuViewModelRegistrations.Register(mainMenuViewModelContainer);
+            
+            //For test
+            mainMenuViewModelContainer.Resolve<UIMainMenuRootViewModel>();
+            
+            var uiRoot = mainMenuContainer.Resolve<UIRootView>();
             var uiScene = Instantiate(_sceneUIRootPrefab);
             uiRoot.AttachSceneUI(uiScene.gameObject);
 
-            var exitSignalSubj = new Subject<Unit>();
+            var exitSignalSubj = new Subject<Unit>(); // subject that will be send to UIMainMenu
             uiScene.Bind(exitSignalSubj);
             
             Debug.Log($"MAIN MENU ENTRY POINT: Run main menu scene. Results: {enterParams?.Result}");
