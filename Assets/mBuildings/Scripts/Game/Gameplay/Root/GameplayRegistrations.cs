@@ -1,6 +1,7 @@
 using BaCon;
 using mBuildings.Scripts.Game.Gameplay.Services;
 using mBuildings.Scripts.Game.GameRoot.Services;
+using mBuildings.Scripts.Game.State;
 
 namespace mBuildings.Scripts.Game.Gameplay.Root
 {
@@ -8,7 +9,10 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
     {
         public static void Register(DIContainer container, GameplayEnterParams gameplayEnterParams)
         {
-            container.RegisterFactory(c => new SomeGameplayService(c.Resolve<SomeProjectService>())).AsSingle();
+            container.RegisterFactory(c => new SomeGameplayService(
+                c.Resolve<IGameStateProvider>().GameState,
+                c.Resolve<SomeProjectService>())
+            ).AsSingle();
         }
     }
 }

@@ -2,7 +2,7 @@ using System;
 using mBuildings.Scripts.Game.GameRoot.Services;
 using UnityEngine;
 
-namespace mBuildings.Scripts.Game.MainMenu.Root.Services
+namespace mBuildings.Scripts.Game.MainMenu.Services
 {
     public class SomeMainMenuService : IDisposable
     {

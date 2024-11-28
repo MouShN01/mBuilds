@@ -1,6 +1,6 @@
 using BaCon;
 using mBuildings.Scripts.Game.GameRoot.Services;
-using mBuildings.Scripts.Game.MainMenu.Root.Services;
+using mBuildings.Scripts.Game.MainMenu.Services;
 
 namespace mBuildings.Scripts.Game.MainMenu.Root
 {

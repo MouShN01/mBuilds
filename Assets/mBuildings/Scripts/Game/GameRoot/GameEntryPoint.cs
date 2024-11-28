@@ -4,6 +4,7 @@ using mBuildings.Scripts.Game.Gameplay;
 using mBuildings.Scripts.Game.Gameplay.Root;
 using mBuildings.Scripts.Game.GameRoot.Services;
 using mBuildings.Scripts.Game.MainMenu.Root;
+using mBuildings.Scripts.Game.State;
 using mBuildings.Scripts.Utils;
 using R3;
 using UnityEngine;
@@ -38,6 +39,10 @@ namespace mBuildings.Scripts.Game.GameRoot
             _uiRoot = Object.Instantiate(prefabUIRoot);
             Object.DontDestroyOnLoad(_uiRoot.gameObject);
             _rootContainer.RegisterInstance(_uiRoot);
+
+            var gameStateProvider = new PlayerPrefsGameStateProvider();
+            gameStateProvider.LoadGameSettingsState();
+            _rootContainer.RegisterInstance<IGameStateProvider>(gameStateProvider);
 
             _rootContainer.RegisterFactory(_ => new SomeProjectService()).AsSingle();
         }
@@ -78,6 +83,10 @@ namespace mBuildings.Scripts.Game.GameRoot
             yield return LoadScene(Scenes.GAMEPLAY);
 
             yield return new WaitForSeconds(1);
+
+            var isGameStateLoaded = false;
+            _rootContainer.Resolve<IGameStateProvider>().LoadGameState().Subscribe(_ => isGameStateLoaded = true);
+            yield return new WaitUntil(() => isGameStateLoaded);
 
             var sceneEntryPoint = Object.FindFirstObjectByType<GameplayEntryPoint>();
             var gameplayContainer = _cachedSceneContainer = new DIContainer(_rootContainer);
