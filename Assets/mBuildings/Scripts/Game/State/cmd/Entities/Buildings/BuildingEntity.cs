@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace mBuildings.Scripts.Game.State.Buildings
+namespace mBuildings.Scripts.Game.State.cmd.Entities.Buildings
 {
     [Serializable]
     public class BuildingEntity

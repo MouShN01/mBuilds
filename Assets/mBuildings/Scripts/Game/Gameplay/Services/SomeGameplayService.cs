@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using mBuildings.Scripts.Game.GameRoot.Services;
-using mBuildings.Scripts.Game.State.Buildings;
+using mBuildings.Scripts.Game.State.cmd.Entities.Buildings;
 using mBuildings.Scripts.Game.State.Root;
 using ObservableCollections;
 using R3;
@@ -20,7 +20,7 @@ namespace mBuildings.Scripts.Game.Gameplay.Services
             _someProjectService = someProjectService;
             Debug.Log(GetType().Name + "has been created");
             
-            gameState.Buildings.ForEach(b=>Debug.Log($"Building: {b.TypeId}"));
+            /*gameState.Buildings.ForEach(b=>Debug.Log($"Building: {b.TypeId}"));
             gameState.Buildings.ObserveAdd().Subscribe(e => Debug.Log($"Building added: {e.Value.TypeId}"));
             gameState.Buildings.ObserveRemove().Subscribe(e => Debug.Log($"Building removed: {e.Value.TypeId}"));
             
@@ -28,7 +28,7 @@ namespace mBuildings.Scripts.Game.Gameplay.Services
             AddBuilding("Armory");
             AddBuilding("Hospital");
             
-            RemoveBuilding("Hospital");
+            RemoveBuilding("Hospital");*/
         }
 
         public void Dispose()
