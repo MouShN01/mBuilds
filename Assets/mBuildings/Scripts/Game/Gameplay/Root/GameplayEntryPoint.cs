@@ -1,6 +1,7 @@
 using BaCon;
 using mBuildings.Scripts.Game.Gameplay.Commands;
 using mBuildings.Scripts.Game.Gameplay.Root.UI;
+using mBuildings.Scripts.Game.Gameplay.Services;
 using mBuildings.Scripts.Game.GameRoot;
 using mBuildings.Scripts.Game.MainMenu.Root;
 using mBuildings.Scripts.Game.State;
@@ -33,18 +34,11 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
             });
             
             //
+            var buildingService = gameplayContainer.Resolve<BuildingService>();
             
-            var cmd = new CommandProcessor(gameStateProvider);
-            
-            cmd.RegisterHandler(new CmdPlaceBuildingHandler(gameStateProvider.GameState));
-            
-            //
-
-            cmd.Process(new CmdPlaceBuilding("Hospital", GetRandomPosition()));
-            cmd.Process(new CmdPlaceBuilding("Armory", GetRandomPosition()));
-            cmd.Process(new CmdPlaceBuilding("House", GetRandomPosition()));
-            
-            
+            buildingService.PlaceBuilding("Hospital", GetRandomPosition());
+            buildingService.PlaceBuilding("Armory", GetRandomPosition());
+            buildingService.PlaceBuilding("House", GetRandomPosition());
             //
             
             //For test
