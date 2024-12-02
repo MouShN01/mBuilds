@@ -16,7 +16,8 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
     public class GameplayEntryPoint : MonoBehaviour
     {
         [SerializeField] private UIGameplayRootBinder _sceneUIRootPrefab;
-
+        [SerializeField] private WorldGameplayRootBinder _worldRootBinder;
+ 
         public Observable<GameplayExitParams> Run(DIContainer gameplayContainer, GameplayEnterParams enterParams)
         {
             GameplayRegistrations.Register(gameplayContainer, enterParams);
@@ -42,8 +43,9 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
             //
             
             //For test
+            _worldRootBinder.Bind(gameplayViewModelContainer.Resolve<WorldGameplayRootViewModel>());
+            
             gameplayViewModelContainer.Resolve<UIGameplayRootViewModel>();
-            gameplayViewModelContainer.Resolve<WorldGameplayRootViewModel>();
             
             var uiRoot = gameplayContainer.Resolve<UIRootView>();
             var uiScene = Instantiate(_sceneUIRootPrefab);
