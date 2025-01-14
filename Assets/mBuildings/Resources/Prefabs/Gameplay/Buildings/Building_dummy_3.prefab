@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2961fd210fa13124f96b130ed50e3bfb, type: 2}
+  - {fileID: 2100000, guid: 27e8b1202ce1d08438a8a76dc03d6ebb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 3175133118189895513}
   - component: {fileID: -2725803288141935537}
   m_Layer: 0
-  m_Name: BuildingDummy
+  m_Name: Building_dummy_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -37,9 +37,9 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
             //
             var buildingService = gameplayContainer.Resolve<BuildingService>();
             
-            buildingService.PlaceBuilding("Hospital", GetRandomPosition());
-            buildingService.PlaceBuilding("Armory", GetRandomPosition());
-            buildingService.PlaceBuilding("House", GetRandomPosition());
+            buildingService.PlaceBuilding("dummy", GetRandomPosition());
+            buildingService.PlaceBuilding("dummy", GetRandomPosition());
+            buildingService.PlaceBuilding("dummy", GetRandomPosition());
             //
             
             //For test

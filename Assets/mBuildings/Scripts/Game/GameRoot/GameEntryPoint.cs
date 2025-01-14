@@ -4,6 +4,7 @@ using mBuildings.Scripts.Game.Gameplay;
 using mBuildings.Scripts.Game.Gameplay.Root;
 using mBuildings.Scripts.Game.GameRoot.Services;
 using mBuildings.Scripts.Game.MainMenu.Root;
+using mBuildings.Scripts.Game.Settings;
 using mBuildings.Scripts.Game.State;
 using mBuildings.Scripts.Utils;
 using R3;
@@ -39,6 +40,10 @@ namespace mBuildings.Scripts.Game.GameRoot
             _uiRoot = Object.Instantiate(prefabUIRoot);
             Object.DontDestroyOnLoad(_uiRoot.gameObject);
             _rootContainer.RegisterInstance(_uiRoot);
+            
+            //Application Settings
+            var settingsProvider = new SettingsProvider();
+            _rootContainer.RegisterInstance<ISettingsProvider>(settingsProvider);
 
             var gameStateProvider = new PlayerPrefsGameStateProvider();
             gameStateProvider.LoadGameSettingsState();
@@ -47,8 +52,9 @@ namespace mBuildings.Scripts.Game.GameRoot
             _rootContainer.RegisterFactory(_ => new SomeProjectService()).AsSingle();
         }
 
-        private void StartGame()
+        private async void StartGame()
         {
+            await _rootContainer.Resolve<ISettingsProvider>().LoadGameSettings();
 #if UNITY_EDITOR
             var sceneName = SceneManager.GetActiveScene().name;
             

@@ -97,14 +97,14 @@ namespace mBuildings.Scripts.Game.State
             {
                 Buildings = new List<BuildingEntity>
                 {
-                    new()
+                    /*new()
                     {
                         TypeId = "PRO100"
                     },
                     new()
                     {
                         TypeId = "STARIK"
-                    }
+                    }*/
                 }
             };
             return new GameStateProxy(_gameStateOrigin);
