@@ -24,24 +24,6 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
             var gameplayViewModelContainer = new DIContainer(gameplayContainer);
             GameplayViewModelRegistrations.Register(gameplayViewModelContainer);
             
-            var gameStateProvider = gameplayContainer.Resolve<IGameStateProvider>();
-            
-            //
-
-            gameStateProvider.GameState.Buildings.ObserveAdd().Subscribe(e =>
-            {
-                var building = e.Value;
-                Debug.Log($"Building placed. Type id: {building.TypeId}; Id: {building.Id}; Position: {building.Position}");
-            });
-            
-            //
-            var buildingService = gameplayContainer.Resolve<BuildingService>();
-            
-            buildingService.PlaceBuilding("dummy", GetRandomPosition());
-            buildingService.PlaceBuilding("dummy", GetRandomPosition());
-            buildingService.PlaceBuilding("dummy", GetRandomPosition());
-            //
-            
             //For test
             _worldRootBinder.Bind(gameplayViewModelContainer.Resolve<WorldGameplayRootViewModel>());
             
@@ -54,7 +36,7 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
             var exitSceneSignalSubj = new Subject<Unit>(); // subject that will be send to UIGameplay
             uiScene.Bind(exitSceneSignalSubj);
             
-            Debug.Log($"GAMEPLAY ENTRY POINT: save file name = {enterParams.SaveFileName}, level to load = {enterParams.LevelNumber}");
+            Debug.Log($"GAMEPLAY ENTRY POINT: level to load = {enterParams.MapId}");
 
             var mainMenuEnterParams = new MainMenuEnterParams("Complete");
             var exitParams = new GameplayExitParams(mainMenuEnterParams);

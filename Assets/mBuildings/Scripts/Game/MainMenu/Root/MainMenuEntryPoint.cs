@@ -32,7 +32,7 @@ namespace mBuildings.Scripts.Game.MainMenu.Root
 
             var saveFileName = "save1.save";
             var levelNumber = Random.Range(0, 300);
-            var gameplayEnterParams = new GameplayEnterParams(saveFileName, levelNumber);
+            var gameplayEnterParams = new GameplayEnterParams(0);
             var mainMenuExitParams = new MainMenuExitParams(gameplayEnterParams);
             var exitToGameplaySceneSignal = exitSignalSubj.Select(_=>mainMenuExitParams);
 

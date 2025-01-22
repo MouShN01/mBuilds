@@ -66,7 +66,7 @@ namespace mBuildings.Scripts.Game.GameRoot
             
             if (sceneName == Scenes.GAMEPLAY)
             {
-                var enterParams = new GameplayEnterParams("fake.save", 1);
+                var enterParams = new GameplayEnterParams(0);
                 _coroutines.StartCoroutine(LoadAndStartGameplay(enterParams));
                 return;
             }

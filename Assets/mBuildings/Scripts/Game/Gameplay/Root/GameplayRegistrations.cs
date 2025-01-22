@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using BaCon;
 using mBuildings.Scripts.Game.Gameplay.Commands;
 using mBuildings.Scripts.Game.Gameplay.Services;
@@ -18,9 +20,24 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
             
             var cmd = new CommandProcessor(gameStateProvider);
             cmd.RegisterHandler(new CmdPlaceBuildingHandler(gameState));
+            cmd.RegisterHandler(new CmdCreateMapStateHandler(gameState, gameSettings));
             container.RegisterInstance<ICommandProcessor>(cmd);
-            
-            container.RegisterFactory(_ => new BuildingService(gameState.Buildings, gameSettings.BuildingsSettings, cmd)).AsSingle();
+
+            var loadingMapId = gameplayEnterParams.MapId;
+            var loadingMap = gameState.Maps.FirstOrDefault(m => m.Id == loadingMapId);
+            if (loadingMap == null)
+            {
+                var command = new CmdCreateMapState(loadingMapId);
+                var success = cmd.Process(command);
+                if (!success)
+                {
+                    throw new Exception($"Failed to create map with id:{loadingMapId}");
+                }
+                
+                loadingMap = gameState.Maps.First(m => m.Id == loadingMapId);
+            }
+
+            container.RegisterFactory(_ => new BuildingService(loadingMap.Buildings, gameSettings.BuildingsSettings, cmd)).AsSingle();
         }
     }
 }

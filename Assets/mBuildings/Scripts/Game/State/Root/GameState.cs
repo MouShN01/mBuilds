@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using mBuildings.Scripts.Game.State.cmd.Entities.Buildings;
+using mBuildings.Scripts.Game.State.Maps;
 using UnityEngine.Serialization;
 
 namespace mBuildings.Scripts.Game.State.Root
@@ -9,6 +10,12 @@ namespace mBuildings.Scripts.Game.State.Root
     public class GameState
     {
         public int GlobalEntityId;
-        public List<BuildingEntity> Buildings;
+        public int CurrentMapId;
+        public List<MapState> Maps;
+
+        public int CreateEntityId()
+        {
+            return GlobalEntityId++;
+        }
     }
 }
