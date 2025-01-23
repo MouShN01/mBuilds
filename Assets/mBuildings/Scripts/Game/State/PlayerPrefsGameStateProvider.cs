@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using mBuildings.Scripts.Game.State.cmd.Entities.Buildings;
+using mBuildings.Scripts.Game.State.GameResources;
 using mBuildings.Scripts.Game.State.Maps;
 using mBuildings.Scripts.Game.State.Root;
 using R3;
@@ -96,7 +97,12 @@ namespace mBuildings.Scripts.Game.State
         {
             _gameStateOrigin = new GameState
             {
-                Maps = new List<MapState>()
+                Maps = new List<MapState>(),
+                Resources = new List<ResourceData>()
+                {
+                    new(){Amount = 0, ResourceType = ResourceType.SoftCurrency},
+                    new(){Amount = 0, ResourceType = ResourceType.HardCurrency}
+                }
             };
             return new GameStateProxy(_gameStateOrigin);
         }

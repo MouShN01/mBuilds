@@ -21,6 +21,8 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
             var cmd = new CommandProcessor(gameStateProvider);
             cmd.RegisterHandler(new CmdPlaceBuildingHandler(gameState));
             cmd.RegisterHandler(new CmdCreateMapStateHandler(gameState, gameSettings));
+            cmd.RegisterHandler(new CmdAddResourceHandler(gameState));
+            cmd.RegisterHandler(new CmdSpendResourceHandler(gameState));
             container.RegisterInstance<ICommandProcessor>(cmd);
 
             var loadingMapId = gameplayEnterParams.MapId;
@@ -38,6 +40,8 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
             }
 
             container.RegisterFactory(_ => new BuildingService(loadingMap.Buildings, gameSettings.BuildingsSettings, cmd)).AsSingle();
+            
+            container.RegisterFactory(_=> new ResourceService(gameState.Resources, cmd)).AsSingle();
         }
     }
 }
