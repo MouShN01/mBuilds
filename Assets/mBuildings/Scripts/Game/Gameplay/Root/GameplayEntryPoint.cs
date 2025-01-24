@@ -1,14 +1,11 @@
 using BaCon;
-using mBuildings.Scripts.Game.Gameplay.Commands;
+using mBuildings.Scripts.Game.Common;
 using mBuildings.Scripts.Game.Gameplay.Root.UI;
-using mBuildings.Scripts.Game.Gameplay.Services;
+using mBuildings.Scripts.Game.Gameplay.View.UI;
 using mBuildings.Scripts.Game.GameRoot;
 using mBuildings.Scripts.Game.MainMenu.Root;
-using mBuildings.Scripts.Game.State;
-using mBuildings.Scripts.Game.State.cmd;
-using ObservableCollections;
+using mBuildings.Scripts.Game.MVVM.UI;
 using R3;
-using UnityEditor;
 using UnityEngine;
 
 namespace mBuildings.Scripts.Game.Gameplay.Root
@@ -25,33 +22,39 @@ namespace mBuildings.Scripts.Game.Gameplay.Root
             GameplayViewModelRegistrations.Register(gameplayViewModelContainer);
             
             //For test
-            _worldRootBinder.Bind(gameplayViewModelContainer.Resolve<WorldGameplayRootViewModel>());
+            InitWorld(gameplayViewModelContainer);
+            InitUI(gameplayViewModelContainer);
             
             gameplayViewModelContainer.Resolve<UIGameplayRootViewModel>();
-            
-            var uiRoot = gameplayContainer.Resolve<UIRootView>();
-            var uiScene = Instantiate(_sceneUIRootPrefab);
-            uiRoot.AttachSceneUI(uiScene.gameObject);
 
             var exitSceneSignalSubj = new Subject<Unit>(); // subject that will be send to UIGameplay
-            uiScene.Bind(exitSceneSignalSubj);
             
             Debug.Log($"GAMEPLAY ENTRY POINT: level to load = {enterParams.MapId}");
 
             var mainMenuEnterParams = new MainMenuEnterParams("Complete");
             var exitParams = new GameplayExitParams(mainMenuEnterParams);
-            var exitToMainMenuSceneSignal = exitSceneSignalSubj.Select(_ => exitParams);
+            var exitSceneRequest = gameplayContainer.Resolve<Subject<Unit>>(AppConstants.EXIT_SCENE_REQUEST_TAG);
+            var exitToMainMenuSceneSignal = exitSceneRequest.Select(_ => exitParams);
 
             return exitToMainMenuSceneSignal;
         }
 
-        private Vector3Int GetRandomPosition()
+        private void InitWorld(DIContainer viewsContainer)
         {
-            var rX = Random.Range(-10, 10);
-            var rY = Random.Range(-10, 10);
-            var rPosition = new Vector3Int(rX, rY, 0);
+            _worldRootBinder.Bind(viewsContainer.Resolve<WorldGameplayRootViewModel>());
+        }
 
-            return rPosition;
+        private void InitUI(DIContainer viewsContainer)
+        {
+            var uiRoot = viewsContainer.Resolve<UIRootView>();
+            var uiSceneBootBinder = Instantiate(_sceneUIRootPrefab);
+            uiRoot.AttachSceneUI(uiSceneBootBinder.gameObject);
+
+            var uiSceneRootViewModel = viewsContainer.Resolve<UIGameplayRootViewModel>();
+            uiSceneBootBinder.Bind(uiSceneRootViewModel);
+            
+            var uiManager = viewsContainer.Resolve<GameplayUIManager>();
+            uiManager.OpenScreenGameplay();
         }
     }
 }
